@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="ru.gb.javafxapplesson4.HelloController">
+<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="ru.gb.javafxapplesson4.Controller">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
+    <TextArea fx:id="historyArea" editable="false" nodeOrientation="RIGHT_TO_LEFT" VBox.vgrow="ALWAYS"/>
+    <HBox spacing="20">
+        <TextField fx:id="userAnswer" prefHeight="25.0" prefWidth="208.0" HBox.hgrow="ALWAYS"/>
+        <Button defaultButton="true" onAction="#writeToChatButton" text="Отпр."/>
+    </HBox>
 </VBox>
