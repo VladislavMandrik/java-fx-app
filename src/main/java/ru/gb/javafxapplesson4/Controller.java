@@ -20,6 +20,7 @@ public class Controller {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
         if (userWrite.isBlank()) {
             return;
+
         }
 
         String text = " " + userAnswer.getText();
