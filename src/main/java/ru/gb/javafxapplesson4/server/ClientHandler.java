@@ -1,5 +1,7 @@
 package ru.gb.javafxapplesson4.server;
 
+import ru.gb.javafxapplesson4.Command;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -23,6 +25,11 @@ public class ClientHandler {
 
             new Thread(() -> {
                 try {
+                    Thread.sleep(120000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
                     authenticate();
                     readMessages();
                 } finally {
@@ -39,24 +46,26 @@ public class ClientHandler {
         while (true) {
             try {
                 final String message = in.readUTF();
-                if (message.startsWith("/auth")) {
-                    String[] split = message.split("\\p{Blank}+");
-                    final String login = split[1];
-                    final String password = split[2];
+                Command command = Command.getCommand(message);
+                if (command == Command.AUTH) {
+                    String[] params = command.parse(message);
+                    String login = params[0];
+                    String password = params[1];
                     String nick = authService.getNickByLoginAndPassword(login, password);
                     if (nick != null) {
                         if (server.isNickBusy(nick)) {
-                            sendMessage("Пользователь уже авторизован!");
+                            sendMessage(Command.ERROR, "Пользователь уже авторизован!");
                             continue;
                         }
-                        sendMessage("/authok " + nick);
+                        sendMessage(Command.AUTHOK, nick);
                         this.nick = nick;
-                        server.broadcast("Пользователь " + nick + " зашел в чат");
+                        server.broadcast(Command.MESSAGE, "Пользователь " + nick + " зашел в чат");
                         server.subscribe(this);
                         break;
                     } else {
-                        sendMessage("Нeверныe логин и пароль");
+                        sendMessage(Command.ERROR);
                     }
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -64,8 +73,12 @@ public class ClientHandler {
         }
     }
 
+    public void sendMessage(Command command, String... params) {
+        sendMessage(command.collectMessage(params));
+    }
+
     private void closeConnection() {
-        sendMessage("/end");
+        sendMessage(Command.END);
         if (in != null) {
             try {
                 in.close();
@@ -91,7 +104,7 @@ public class ClientHandler {
         }
     }
 
-    public void sendMessage(String message) {
+    private void sendMessage(String message) {
         try {
             out.writeUTF(message);
         } catch (IOException e) {
@@ -103,16 +116,16 @@ public class ClientHandler {
         while (true) {
             try {
                 final String message = in.readUTF();
-                if ("/end".equals(message)) {
+                Command command = Command.getCommand(message);
+                if (command == Command.END) {
                     break;
-                } else if (message.startsWith("/w")) {
-                    String[] split = message.split("\\p{Blank}+");
-                    final String recipient = split[1];
-                    final String privateMessage = split[2];
-                    server.privateMessage(recipient, nick + ": " + privateMessage);
-                } else {
-                    server.broadcast(nick + ": " + message);
                 }
+                if (command == Command.PRIVATE_MESSAGE) {
+                    String[] params = command.parse(message);
+                    server.sendPrivateMessage(this, params[0], params[1]);
+                    continue;
+                }
+                server.broadcast(Command.MESSAGE, nick + ": " + command.parse(message)[0]);
             } catch (IOException e) {
                 e.printStackTrace();
             }

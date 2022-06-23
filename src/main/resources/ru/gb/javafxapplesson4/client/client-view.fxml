@@ -15,12 +15,18 @@
             <PasswordField fx:id="passField" promptText="password"/>
             <Button text="Sign in" onAction="#signInBtnClick"/>
         </HBox>
-        <VBox fx:id="messageBox" visible="false">
+        <HBox fx:id="messageBox" visible="false">
+            <VBox>
             <TextArea fx:id="messageArea" editable="false" VBox.vgrow="ALWAYS"/>
             <HBox spacing="10">
                 <TextField fx:id="messageField" HBox.hgrow="ALWAYS"/>
                 <Button text="Send" defaultButton="true" onAction="#clickSendButton"/>
             </HBox>
-        </VBox>
+            </VBox>
+            <VBox>
+                <Button text="Sign out" onAction="#signOutClick"/>
+            <ListView fx:id="clientList" minWidth="200" maxWidth="200" onMouseClicked="#selectClient"/>
+            </VBox>
+        </HBox>
     </VBox>
 </VBox>
