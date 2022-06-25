@@ -17,6 +17,8 @@ public class ChatClient {
     private DataOutputStream out;
 
     private final ChatController controller;
+    private boolean isAuthorized;
+
 
     public ChatClient(ChatController controller) {
         this.controller = controller;
@@ -26,6 +28,18 @@ public class ChatClient {
         socket = new Socket("localhost", 8191);
         in = new DataInputStream(socket.getInputStream());
         out = new DataOutputStream(socket.getOutputStream());
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(120000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            if (!isAuthorized) {
+                closeConnection();
+            }
+        }).start();
+
         new Thread(() -> {
             try {
                 waitAuth();
@@ -47,6 +61,7 @@ public class ChatClient {
                 String nick = params[0];
                 controller.setAuth(true);
                 controller.addMessage("Успешная авторизация под ником " + nick);
+                isAuthorized = true;
                 break;
             }
             if (command == ERROR) {

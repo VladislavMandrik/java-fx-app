@@ -25,11 +25,6 @@ public class ClientHandler {
 
             new Thread(() -> {
                 try {
-                    Thread.sleep(120000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                try {
                     authenticate();
                     readMessages();
                 } finally {

@@ -1,6 +1,5 @@
 package ru.gb.javafxapplesson4.client;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -8,7 +7,6 @@ import javafx.scene.layout.HBox;
 import ru.gb.javafxapplesson4.Command;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 public class ChatController {
